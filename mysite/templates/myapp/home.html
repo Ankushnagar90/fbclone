@@ -1,0 +1,34 @@
+{% extends 'myapp/base.html' %}
+
+
+
+{% block content %}
+
+
+
+        <form  method="POST" class="text-center" >
+            {% csrf_token %}
+
+            Hello,<h5 class="fst-italic text-primary">{{user.username}}Profile</h5> 
+            <a href= "{% url 'myapp:upload'%}"  class="btn btn-success">Add New Post</a><hr>
+              {% for exp in object_list %}
+                  <h5>{{exp.id}} </h5>
+                  <h5>{{exp.title}} </h5>
+                   <h6>desc:{{exp.description}}</h6> <br>
+                  <img src="{{ exp.pic.url }}"width="500 "/><br><br>
+
+              <a href= "{% url 'myapp:update' exp.pk %}"  class="btn btn-info">update</a>
+              <a href= "{% url 'myapp:delete' exp.pk %}"  class="btn btn-danger" >delete</a>
+              <br><hr style="height:5px; width:100%; border-width:2;background-color:red" >
+
+              {% endfor %}
+
+
+        </form>
+
+
+
+
+
+
+{% endblock content %}

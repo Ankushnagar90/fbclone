@@ -15,11 +15,17 @@
          <h4 class="text-primary"> <label class="text-secondary" for="id_fieldName">LastName:</label> &emsp;&emsp;{{ user.last_name }}</h4>
          <h4 class="text-primary"> <label class="text-secondary" for="id_fieldName">EmailAdd:</label> &emsp;{{ user.email }}</h4>
          {% comment %}<h4 class="text-primary"> <label class="text-secondary" for="id_fieldName">Mobile :</label> &emsp;&emsp;{{ user.mobile_num }}</h4>{% endcomment %}
-         
+
           </form>
 
     {% else %}
       <h1>not defined all data</h1>
 
   {% endif %}
+  <br>
+  <br>
+  <a href="{% url 'myapp:login' %}"><h3 class="text-danger">logout user</h3></a>
+
+
+
 {% endblock content %}
