@@ -18,7 +18,7 @@ class Post(models.Model):
     date_posted =  models.DateTimeField(default=timezone.now)
 
     likes = models.ManyToManyField(User, related_name='user_likes', blank=True)
-    # like_count = models.BigIntegerField(default='0')
+    
 
     objects = UserManager()
     
@@ -32,6 +32,48 @@ class Post(models.Model):
     def __str__(self):
         return self.title
 
-    # def get_absolute_url(self):
-    #     return reverse("author", kwargs={'pk':self.pk})
 
+class Comment(models.Model):
+    name = models.CharField(max_length=50 ,blank=True,null=True)
+    email = models.EmailField(max_length=100 ,blank=True,null=True)
+    content = models.TextField()
+    post = models.ForeignKey(Post, on_delete=models.CASCADE)
+    created = models.DateTimeField(default=timezone.now)
+
+    class Meta:
+        ordering = ('-created',)
+
+    def __str__(self):
+        return 'Comment by {}'.format(self.name)
+
+
+# class Comment(models.Model):
+#     post = models.ForeignKey(Post, on_delete=models.CASCADE,related_name='comments')
+#     content = models.TextField(max_length=5000)
+#     author = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE)
+#     date_posted =  models.DateTimeField(default=timezone.now)
+    
+#     def __str__(self):
+#         return self.content
+
+    # def get_absolute_url(self):
+    #     return reverse('myapp:detail')
+
+    # def get_absolute_url(self):
+
+
+# class comment(models.Model):
+    
+#     comments = models.ForeignKey(Post, related_name='user_comment',on_delete=models.CASCADE, blank=True)
+#     author = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE)
+#     content = models.TextField(max_length=5000 ,default=None)
+#     date_posted =  models.DateTimeField(default=timezone.now)
+
+#     def __str__(self):
+#         return self.author 
+
+#     def publish(self):
+#         self.date_posted = timezone.now()
+#         self.save()
+
+    

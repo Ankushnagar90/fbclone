@@ -2,18 +2,14 @@
 from django.shortcuts import render,HttpResponseRedirect
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, TemplateView, ListView, DeleteView,UpdateView, DetailView
-from myapp.forms import SignUpForm,LoginForm,NewPostForm
-from myapp.models import Post
+from myapp.forms import SignUpForm,LoginForm,NewPostForm,CommentForm
+from myapp.models import Post,Comment
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.utils.decorators import method_decorator
 from django.shortcuts import get_object_or_404,redirect
 from django.contrib.auth.models import User
 from django.template.loader import render_to_string
-try:
-    from django.utils import simplejson as json
-except:
-    import json
-
+import json
 from django.http import JsonResponse
 # from django.contrib.auth.decorators import login_required
 # from django.views.decorators.http import require_POST
@@ -87,21 +83,64 @@ class PostUpdate(UpdateView):
     success_url = reverse_lazy('myapp:home')
 
 
-class PostDetail(DetailView):
+class PostDetail(DetailView):   
     model = Post
     template_name = 'myapp/post_detail.html'
 
-    # def get_context_data(self, **kwargs):
-    #     data = super().get_context_data(**kwargs)
+    def get_context_data(self, **kwargs):
+        
+        context = super().get_context_data(**kwargs)
+        pk = self.kwargs["pk"]
 
-    #     likes_connected = get_object_or_404(Post, id=self.kwargs['pk'])
-    #     liked = False
-    #     if likes_connected.likes.filter(id=self.request.user.id).exists():
-    #         liked = True
-    #     data['number_of_likes'] = likes_connected.number_of_likes()
-    #     data['post_is_liked'] = liked
-    #     return data
+        form = CommentForm()
+        post = get_object_or_404(Post, pk=pk)
+        comments = post.comment_set.all()
 
+        context['post'] = post
+        context['comments'] = comments
+        context['form'] = form
+        return context
+    def post(self, request, *args, **kwargs):
+        
+        form = CommentForm(request.POST)
+        self.object = self.get_object()
+        context = super().get_context_data(**kwargs)
+
+        post = Post.objects.filter(id=self.kwargs['pk'])[0]
+        comments = post.comment_set.all()
+
+        context['post'] = post
+        context['comments'] = comments
+        context['form'] = form
+
+        if form.is_valid():
+            content = self.request.POST.get('content')
+            data = {
+
+            'content' : form.cleaned_data['content'],
+            }
+            
+            comment = Comment.objects.create( content=content, post=post)
+            text = render_to_string('myapp/post_detail.html',data ,request=request)
+            return JsonResponse(data, safe=False)
+    
+    # def post(self, request, *args, **kwargs):        
+    #     if self.request.method == 'POST':
+    #         comment_form = CommentForm(self.request.POST or None)
+    #         if comment_form.is_valid():
+    #             content = self.request.POST.get('content')
+    #             comment_qs = None
+
+    #             comment = Comment.objects.create(
+    #                 post=post, user=self.request.user, content=content)
+    #             comment.save()
+    #             return HttpResponseRedirect("myapp/post_detail.html")
+
+    #     html = render_to_string('myapp/Post_detail.html', request=self.request)
+    #     return JsonResponse(content)
+        
+
+   
 class UserPostListView(ListView):
     model = Post
     template_name = 'myapp/user_post_detail.html'
@@ -112,6 +151,84 @@ class UserPostListView(ListView):
         author_username = self.request.user.username
         return Post.objects.filter(author__username=author_username).order_by("-date_posted")
 
+def like_post(request,pk):
+    # import pdb; pdb.set_trace()
+    if request.method == "POST":
+        # import pdb; pdb.set_trace()
+        
+        # id = int(request.POST.get('pk'))
+        post = get_object_or_404(Post,id=request.POST.get('post_id',pk))
+        id=pk
+        is_liked = False
+        if post.likes.filter(id=request.user.id).exists():
+            post.likes.remove(request.user.id)
+            is_liked = False   
+            post.save()
+        else:
+            post.likes.add(request.user.id)
+            is_liked = True
+            post.save()
+   
+        total_dict = {"total_likes" : post.total_likes() ,'is_liked':is_liked}
+        return JsonResponse(total_dict)  
+
+
+# def addcomment(request):
+
+#     if request.method == 'POST':
+#         import pdb; pdb.set_trace()
+#         comment_form = CommentForm(request.POST)
+
+#         if comment_form.is_valid():
+#             user_comment = comment_form.save(commit=False)
+#             result = comment_form.cleaned_data.get('content')
+#             user = request.user.username
+#             user_comment.author = request.user
+#             user_comment.save()
+#             return JsonResponse({'result': result, 'user': user})
+
+
+
+# def add_comment(request, pk):
+#     template_name = 'post_detail.html'
+#     post = get_object_or_404(Post, id=pk)
+#     comments = post.comments.filter(author=True)
+#     new_comment = None
+#     # Comment posted
+#     if request.method == 'POST':
+#         comment_form = CommentForm(data=request.POST)
+#         if comment_form.is_valid():
+
+#             # Create Comment object but don't save to database yet
+#             new_comment = comment_form.save(commit=False)
+#             # Assign the current post to the comment
+#             new_comment.post = post
+#             # Save the comment to the database
+#             new_comment.save()
+#     else:
+#         comment_form = CommentForm()
+
+#     return render(request, template_name, {'post': post,
+#                                            'comments': comments,
+#                                            'new_comment': new_comment,
+#                                            'comment_form': comment_form})
+
+
+
+
+
+
+
+
+# class CreateCommentView(DetailView):
+    
+#     form_class = NewCommentForm
+#     template_name = 'myapp/post_detail.html'
+#     success_url = reverse_lazy('myapp:detail')
+    
+#     def form_valid(self, form):
+#         form.instance.author = self.request.user
+#         return super().form_valid(form)
 
 # @login_required
 # @require_POST
@@ -156,28 +273,7 @@ class UserPostListView(ListView):
 #         html = render_to_string('myapp/like_section.html', context, request=request)
 #         # return render(request,'myapp/like_section.html' ,{'post': Post})
 
-    
 
-def like_post(request,pk):
-    # import pdb; pdb.set_trace()
-    if request.method == "POST":
-        # import pdb; pdb.set_trace()
-        
-        # id = int(request.POST.get('pk'))
-        post = get_object_or_404(Post,id=request.POST.get('post_id',pk))
-        id=pk
-        is_liked = False
-        if post.likes.filter(id=request.user.id).exists():
-            post.likes.remove(request.user.id)
-            is_liked = False   
-            post.save()
-        else:
-            post.likes.add(request.user.id)
-            is_liked = True
-            post.save()
-   
-        total_dict = {"total_likes" : post.total_likes() ,'is_liked':is_liked}
-        return JsonResponse(total_dict)  
 
 # class PhotoDetailView(DetailView): 
 #     form_class = NewPostForm

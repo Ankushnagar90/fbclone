@@ -1,19 +1,49 @@
 {% extends 'myapp/base.html' %}
 
 {% block content %}
-
+<div class=" container text-center">
   <form  method="POST" class="text-center" >
     {% csrf_token %}
-
       <h5 class=" fst-italic text-danger">Hello,{{ user.username }}</h5>
         <a href= "{% url 'myapp:profile' user.pk %}">
           <h3 class="fst-italic text-primary">MyProfile</h3></a>
             <a href = "{% url 'myapp:userpost' %}">
               <h4 class="fst-italic text-success">MyPost</h4></a>
+
               <br>
-            <a href= "{% url 'myapp:upload'%}"  class="btn btn-outline-primary">Add New Post</a>
+            {# <a href= "{% url 'myapp:upload'%}"  class="btn btn-outline-primary">Add New Post</a> #}
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#myModal" >Add new Post</button>
+
             <a href= "{% url 'myapp:logout'%}"  class="btn btn-outline-danger">Logout user</a>
-      <hr style="height:5px; width:100%; border-width:2;background-color:blue" >
+            <hr style="height:5px; width:100%; border-width:2;background-color:blue" >
+            
+ 
+            <div class="modal" id="myModal">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title">Add student</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                  </div>
+                  <div class="modal-body">
+                    <form  method="POST" enctype="multipart/form-data">
+                      {% csrf_token %}
+                      {{ form.as_p }}
+                    </form>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="submit" class="btn-success">Add new post</button>
+                    <button type="submit" class="btn-danger">cancel</button>
+                  </div>
+                </div>
+                
+              </div>
+              
+            </div>
+
+
+
+            
 
       <h1>-:Visit Tourism Places:-</h1>
              <hr style="height:5px; width:100%; border-width:2;background-color:blue" >
@@ -31,18 +61,27 @@
                       <br>
                 {% endif %}
                 <br>
+
                 <br>
-               
-                      <br>
+                <br>
                       <h5 class="text-">Author:</h5><p>{{ exp.author }}</p>
                       <p>{{ exp.date_posted }}</p>
 
                   
                 
+                {% if request.user in exp.likes.all %}
+
+                          <button type="button" id="dislike-{{ exp.pk }}" name="post_id" value="{{ exp.pk }}" class="like-dislike btn btn-danger">Dislike</button>
+                {% else %}
+                          <button type="button" id="like-{{ exp.pk }}" name="post_id" value="{{ exp.pk }}" class="like-dislike btn btn-primary">Like</button>
+                {% endif %}
+                    
+                    <p id="total_likes-{{ exp.pk }}">{{ exp.total_likes }}</p>       
                 <hr style="height:5px; width:100%; border-width:2;background-color:red" >
           {% endfor %}
 
-  </form>
+  </form> 
+</div>
 {% endblock content %}
 
 

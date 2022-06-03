@@ -1,6 +1,6 @@
 {% extends 'myapp/base.html' %}
 {% block content %}
- 	<p id="total_likes">{{ post.total_likes }}</p>
+<p id="total_likes-{{ post.pk }}">{{ post.total_likes }}</p>
 	
 	<form  method="POST">
 	 {% csrf_token %}
@@ -11,7 +11,7 @@
             <button type="button" id="like-{{ post.pk }}" name="post_id" value="{{ post.pk }}" class="like-dislike btn btn-primary">Like</button>
         {% endif %}
       
-  </form> 
+    </form> 
   
 {% endblock content %} 
 

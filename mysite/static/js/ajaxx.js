@@ -1,8 +1,8 @@
 $(document).ready(function(){
   
   $(".like-dislike").click(function(event){
-    // debugger
-     event.preventDefault();
+    
+     // event.preventDefault();
      var id = $(this).attr("value");
      var url = "/like/"+id+"/";
       
@@ -14,6 +14,7 @@ $(document).ready(function(){
             'csrfmiddlewaretoken': $("input[name=csrfmiddlewaretoken]").val()
           },
           success: function(response)
+
           { 
             
               console.log("Success!",response);  
@@ -21,8 +22,9 @@ $(document).ready(function(){
                 $(`#like-${id}`).text('Dislike');
                 $(`#like-${id}`).removeClass("like-dislike btn btn-primary");
                 $(`#like-${id}`).addClass("like-dislike btn btn-danger");
-                $('#total_likes').text(response.total_likes);
                 $(`#like-${id}`).attr('id',`dislike-${id}`); 
+                $(`#total_likes-${id}`).text(response.total_likes);
+                
                 // console.log (DISLIKE);
                 // console.log('Show Dislike');
               }
@@ -31,7 +33,8 @@ $(document).ready(function(){
                 $(`#dislike-${id}`).removeClass("like-dislike btn btn-danger");
                 $(`#dislike-${id}`).addClass("like-dislike btn btn-primary");
                 $(`#dislike-${id}`).attr('id',`like-${id}`);
-                $('#total_likes').text(response.total_likes);
+                $(`#total_likes-${id}`).text(response.total_likes);
+                
                 // console.log (LIKE);
                 // console.log('Show like');
               }
@@ -49,8 +52,3 @@ $(document).ready(function(){
     })
 })
 
-
-
-     // var data_dict = {  csrfmiddlewaretoken: '{{ csrf_token }}' };
-     // const url = $(this).attr('action')
-     // console.log(url)
