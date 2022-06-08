@@ -87,43 +87,20 @@ class PostDetail(DetailView):
     model = Post
     template_name = 'myapp/post_detail.html'
 
-    def get_context_data(self, **kwargs):
         
-        context = super().get_context_data(**kwargs)
-        pk = self.kwargs["pk"]
+def add_comment(request, *args, **kwargs):
+        objs = Post.objects.filter(id=kwargs['pk'])[0]
+        obj = objs.comment_set.create(author=request.user, content=request.POST.get('content'))
+        response = {
+            'user': obj.author.username,
+            'content': obj.content,
+            'post': obj.post.id,
+            'created': obj.created,
+            'count': objs.comment_set.count()
+        }
+        return JsonResponse(response)    
 
-        form = CommentForm()
-        post = get_object_or_404(Post, pk=pk)
-        comments = post.comment_set.all()
 
-        context['post'] = post
-        context['comments'] = comments
-        context['form'] = form
-        return context
-    def post(self, request, *args, **kwargs):
-        
-        form = CommentForm(request.POST)
-        self.object = self.get_object()
-        context = super().get_context_data(**kwargs)
-
-        post = Post.objects.filter(id=self.kwargs['pk'])[0]
-        comments = post.comment_set.all()
-
-        context['post'] = post
-        context['comments'] = comments
-        context['form'] = form
-
-        if form.is_valid():
-            content = self.request.POST.get('content')
-            data = {
-
-            'content' : form.cleaned_data['content'],
-            }
-            
-            comment = Comment.objects.create( content=content, post=post)
-            text = render_to_string('myapp/post_detail.html',data ,request=request)
-            return JsonResponse(data, safe=False)
-    
     # def post(self, request, *args, **kwargs):        
     #     if self.request.method == 'POST':
     #         comment_form = CommentForm(self.request.POST or None)
