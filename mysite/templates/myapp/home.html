@@ -11,35 +11,14 @@
               <h4 class="fst-italic text-success">MyPost</h4></a>
 
               <br>
-            {# <a href= "{% url 'myapp:upload'%}"  class="btn btn-outline-primary">Add New Post</a> #}
-            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#myModal" >Add new Post</button>
+            <a href= "{% url 'myapp:upload'%}"  class="btn btn-outline-primary">Add New Post</a>
+            {# <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#myModal" >Add new Post</button> #}
 
             <a href= "{% url 'myapp:logout'%}"  class="btn btn-outline-danger">Logout user</a>
             <hr style="height:5px; width:100%; border-width:2;background-color:blue" >
             
  
-            <div class="modal" id="myModal">
-              <div class="modal-dialog">
-                <div class="modal-content">
-                  <div class="modal-header">
-                    <h5 class="modal-title">Add student</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                  </div>
-                  <div class="modal-body">
-                    <form  method="POST" enctype="multipart/form-data">
-                      {% csrf_token %}
-                      {{ form.as_p }}
-                    </form>
-                  </div>
-                  <div class="modal-footer">
-                    <button type="submit" class="btn-success">Add new post</button>
-                    <button type="submit" class="btn-danger">cancel</button>
-                  </div>
-                </div>
-                
-              </div>
-              
-            </div>
+            
 
 
 

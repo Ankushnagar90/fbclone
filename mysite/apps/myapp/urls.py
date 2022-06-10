@@ -1,10 +1,9 @@
 from django.urls import path
-
 from .import views
 # from django.views.generic import TemplateView
 from django.contrib.auth import views as auth_views
 
-app_name = 'myapp'
+app_name = 'myapp'  
 urlpatterns = [
     path('', views.index.as_view(),name='about'),
     path('login/',auth_views.LoginView.as_view(template_name = 'myapp/login.html',redirect_authenticated_user = True),name='login'),

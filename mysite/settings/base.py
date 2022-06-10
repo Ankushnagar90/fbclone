@@ -31,7 +31,11 @@ DEBUG = config('DEBUG', default=False, cast=bool)
 
 ALLOWED_HOSTS = []
 
-
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': [
+    'rest_framework.permissions.AllowAny',
+    ]
+}
 # Application definition
 
 INSTALLED_APPS = [
@@ -41,7 +45,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'myapp'
+    'rest_framework',
+    'myapp',
+    'api_url',
+    'api_view'
 ]
 
 MIDDLEWARE = [
