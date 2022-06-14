@@ -19,4 +19,6 @@ urlpatterns = [
     path('author/',views.UserPostListView.as_view(),name="userpost"),
     path('like/<int:pk>/', views.like_post, name="like_post"),
     path('comment/<int:pk>/', views.add_comment, name="comment"),
+
+    # path('email/', views.bhej_email, name="email"),
 ]

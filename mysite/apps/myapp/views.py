@@ -11,7 +11,8 @@ from django.contrib.auth.models import User
 from django.template.loader import render_to_string
 import json
 from django.http import JsonResponse
-# from django.contrib.auth.decorators import login_required
+from django.core.mail import send_mail
+from django.contrib.auth.decorators import login_required
 # from django.views.decorators.http import require_POST
 # from django.contrib.auth.decorators import login_required
 
@@ -20,6 +21,7 @@ from django.http import JsonResponse
 
 class index(TemplateView):
     template_name='myapp/fb_index.html'
+    
 
 class SignUpView(CreateView):
     form_class = SignUpForm
@@ -148,6 +150,16 @@ def like_post(request,pk):
    
         total_dict = {"total_likes" : post.total_likes() ,'is_liked':is_liked}
         return JsonResponse(total_dict)  
+
+# def bhej_email(request):
+
+#     send_mail('hello World !',
+#         'Hello there, This is an email message',
+#         'Ankush.thoughtwin@gmail.com',
+#         ['eshita'],
+#         fail_silently=False)
+
+#     return render(request,'myapp/email.html') 
 
 
 # def addcomment(request):
