@@ -31,11 +31,6 @@ DEBUG = config('DEBUG', default=False, cast=bool)
 
 ALLOWED_HOSTS = []
 
-REST_FRAMEWORK = {
-    'DEFAULT_PERMISSION_CLASSES': [
-    'rest_framework.permissions.AllowAny',
-    ]
-}
 # Application definition
 
 INSTALLED_APPS = [
@@ -48,9 +43,21 @@ INSTALLED_APPS = [
     'rest_framework',
     'myapp',
     'api_url',
-    'api_view'
+    'api_view',
+    'rest_framework.authtoken',
 ]
 
+REST_FRAMEWORK = {
+    # Use Django's standard `django.contrib.auth` permissions,
+    # or allow read-only access for unauthenticated users.
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
+    ],
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    )
+}
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
