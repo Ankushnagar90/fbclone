@@ -22,3 +22,6 @@ urlpatterns = [
 
     # path('email/', views.bhej_email, name="email"),
 ]
+
+
+

@@ -41,10 +41,12 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'rest_framework.authtoken',
+    'rest_auth',
+    'drf_yasg',
     'myapp',
     'api_url',
     'api_view',
-    'rest_framework.authtoken',
 ]
 
 REST_FRAMEWORK = {

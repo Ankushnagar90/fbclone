@@ -1,7 +1,7 @@
 from myapp.models import Post,User
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from myapp.serializers import PostSerializer,UserSerializer
+from myapp.serializers import PostSerializer,UserSerializer,UpdateUserSerializer
 from rest_framework import generics
 from rest_framework import mixins
 from rest_framework import permissions
@@ -42,68 +42,38 @@ class UserLoginAPI(generics.CreateAPIView):
         return Response({'token': token.key,"message": "Login Successfully",'user':username},
                     status=HTTP_200_OK)
 
-        # serializer = self.get_serializer(data=request.data)
-        # serializer.is_valid(raise_exception=True)
-        # user = serializer.validated_data['username']    
-        # token = Token.objects.create(user=user)
-        # print(token.key)
-        # headers = self.get_success_headers(serializer.data)
-        # return Response({"message": "Login Successfully", "headers":headers, "code": 200, "token": token,})
-
 
 class UserLogoutAPI(generics.DestroyAPIView,UserLoginAPI):
-    permission_classes = (IsAuthenticated,)
-
-    # authentication_classes = [YourAuthClass]   
+    permission_classes = (IsAuthenticated,) 
 
     def get(self, request, format=None):
-        # import pdb; pdb.set_trace()
-        Token.objects.filter(user=request.user).delete()
-        # request.user.auth_token.delete()
+        Token.objects.filter(user=request.user).delete()       
         logout(request)
         return Response({"message": "logout Successfully","code": 204,})
 
-    # def User_logout(request):
-    #     del_token=request.user.auth_token.delete()
-    #     logout(request)
-    #     return Response('User Logged out successfully')
 
-# class UpdateAPIView(generics.UpdateAPIView):
-#     permission_classes = (IsAuthenticated,)
-#     serializer_class = serializers.UserSerializer
+class UpdateProfileView(generics.RetrieveUpdateAPIView):
 
-#     def put(self, request, user_id, format=None):
-#         import pdb; pdb.set_trace()
-#         user = User.objects.get(userid=user_id)
-#         Token.objects.filter(user=request.user)
-#         serializer = UserSerializer(user, data=request.data)
-#         if serializer.is_valid():
-#             serializer.save()
-#             return JsonResponse(serializer.data)
-#         # return self.update(request, *args, **kwargs)
-#         return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)        
+    # import pdb; pdb.set_trace()
+    permission_classes = (IsAuthenticated,)
+    queryset = User.objects.all()
+    serializer_class = UpdateUserSerializer
 
-class UserProfileUpdateView(generics.UpdateAPIView):
-    authentication_classes = (TokenAuthentication,)
-    permission_classes = ((IsAuthenticated,))
-    serializer_class = UserProfileSerializer
-    def get_object(self):
-        return User.objects.get(user=self.request.user)
 
 class DeleteAPIView(generics.DestroyAPIView):
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (permissions.IsAuthenticated,)
+    serializer_class = UserSerializer
+    queryset = User.objects.all()
 
-    def delete(self, request, username, format=None):
-        user = User.objects.filter(username=username)
-        Token.objects.filter(user=request.user)
-
-        if user:
-            user.delete()
-            return JsonResponse({"status":"ok"}, status=status.HTTP_200_OK)
-        return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    def delete(self, request, *args, **kwargs):
+        Token.objects.filter(user=request.user).delete()
+        user=self.request.user
+        user.delete()
+        return Response({"result":"user delete"})
 
 
 class PostListAPIView(generics.ListCreateAPIView):
+
     queryset = Post.objects.all() 
     serializer_class = serializers.PostSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
@@ -132,13 +102,13 @@ class PostListAPIView(generics.ListCreateAPIView):
         print("Mail successfully sent")
 
 
-    
-
 class PostDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
+    
     queryset = Post.objects.all()
     serializer_class = serializers.PostSerializer
 
 
+    
 
 
 
@@ -148,6 +118,41 @@ class PostDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
 
 
 
+    # def update(self, request, *args, **kwargs):
+    #     Token.objects.filter(user=request.user)
+    #     user=self.request.user
+         
+    #     return Response({"result":"user update"})
+        
+    # def put(self, request, user_id, format=None):
+    #     import pdb; pdb.set_trace()
+    #     user = User.objects.get(userid=user_id)
+    #     Token.objects.filter(user=request.user)
+    #     serializer = UserSerializer(user, data=request.data)
+    #     if serializer.is_valid():
+    #         serializer.save()
+    #         return JsonResponse(serializer.data)
+    #     # return self.update(request, *args, **kwargs)
+    #     return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)        
+
+# class UserProfileUpdateView(generics.UpdateAPIView):
+#     authentication_classes = (TokenAuthentication,)
+#     permission_classes = ((IsAuthenticated,))
+#     serializer_class = UserProfileSerializer
+#     def get_object(self):
+#         return User.objects.get(user=self.request.user)
+
+# class DeleteAPIView(generics.DestroyAPIView):
+#     queryset = User.objects.all()
+#     permission_classes = (IsAuthenticated,)
+#     serializer_class = serializers.UserSerializer
+#     lookup_field = 'pk'
+
+#     def destroy(self, request, pk=None, *args, **kwargs):
+#         instance = self.get_object()
+#         # you custom logic #
+#         return super(DeletePostViewSet, self).destroy(request, pk, *args, **kwargs)
+#         return JsonResponse({"message": "logout Successfully","code": 201,})
 
 
 
