@@ -7,7 +7,7 @@ from django.contrib.auth.models import UserManager
 
 
 class Post(models.Model):
-    
+    is_good=models.BooleanField()
     title = models.CharField(max_length=255,default=None)
 
     description = models.TextField(max_length=5000 ,default=None)
