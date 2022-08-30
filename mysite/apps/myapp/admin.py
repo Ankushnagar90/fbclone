@@ -1,5 +1,6 @@
 from django.contrib import admin
 from .models import Post,Comment
+
 from django.utils.html import format_html
 # from django.contrib.auth.models import User
 
@@ -41,4 +42,3 @@ class PostAdmin(admin.ModelAdmin):
 
 # admin.site.register(Post)
 admin.site.register(Comment)
-
